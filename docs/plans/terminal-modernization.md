@@ -517,4 +517,38 @@ cmux+Herdr added).
   definitions, secrets/eza/starship/bgnotify/custom-functions all still
   working.
 
-- **Phase 5 (cutover + cleanup): not started.**
+- **Phase 5 (cutover + cleanup): cutover done, cleanup intentionally
+  paused**, on branch `phase-5-cutover-cleanup`.
+
+  **Cutover (done, live now):** confirmed `~/.zshenv` unchanged since the
+  Phase 0 backup, then replaced it with the one-line bootstrap:
+  ```zsh
+  export ZDOTDIR="$HOME/local/dotfiles/zsh"
+  ```
+  (Dropped the old `. "$HOME/.cargo/env"` line — redundant with the PATH
+  array in `zsh/.zprofile`.) Verified with a genuinely fresh shell (no env
+  overrides, reading the real live `~/.zshenv`): `$ZDOTDIR` resolves
+  correctly, `HISTFILE` is the existing history, all git aliases/eza/
+  secrets/fnm/starship work. **Every new terminal window/tab from this
+  point forward uses the new config.** Rollback, if ever needed: restore
+  `~/.zshenv` from `backup/20260713-154441/.zshenv` (still exactly the
+  original one-liner).
+
+  **Cleanup: deliberately not started yet.** The plan's own "confidence
+  window" step calls for actually using the new shell for real before
+  deleting anything, and cleanup includes materially harder-to-reverse
+  actions than the cutover itself (removing `~/.oh-my-zsh`, the original
+  secret key files, `nvm`, and later `Warp` once cmux+Herdr are trusted) —
+  unlike the cutover, restoring one file doesn't undo those. Waiting for
+  explicit confirmation before proceeding with:
+  - Removing now-inert `~/.zshrc`, `~/.zprofile`, `~/.zlogin` (already
+    backed up).
+  - `rm -rf ~/.oh-my-zsh` (46 MB) and optionally `npm rm -g pure-prompt`.
+  - Removing the 3 original key files (`~/.openai_key`, `~/.lastfm_key`,
+    `~/.tmdb_key` — now consolidated in `~/.zshrc.local`).
+  - Removing `nvm` (after confirming `fnm` parity holds up in real use).
+  - Reconciling `.profile`/`.bash_profile`/`.bashrc` (dedupe PATH lines).
+  - Removing `backup/20260713-154441/` once fully confident (it holds
+    secrets).
+  - Removing Warp, once cmux+Herdr have been used side-by-side long enough
+    to trust them (independent timing from the shell cleanup above).
