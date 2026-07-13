@@ -307,6 +307,36 @@ there's no reason to rush it.
 ## Status
 
 All three open items from the previous round are now resolved (Atuin in, fnm in,
-cmux+Herdr added). Nothing has been executed yet — no tools installed, no files
-written outside this doc and the not-yet-taken Phase 0 backup. Ready to move to
-Phase 0 whenever you want to proceed.
+cmux+Herdr added).
+
+- **Phase 0 (backup): done**, merged to `main`. Timestamped backup at
+  `backup/20260713-154441/` (local, gitignored). `.gitignore` fixed (stray `n`
+  removed; `backup/`, `.zshrc.local`, `*.local` added).
+- **Phase 1 (install tools): done**, on branch `phase-1-install-tools`, awaiting
+  merge. Installed via Homebrew: `starship` 1.26.0, `zoxide` 0.10.0, `fzf` 0.74.0,
+  `eza` 0.23.5, `fd` 10.4.2, `zinit` 3.15.0, `fnm` 1.39.0, `direnv` 2.37.1, `atuin`
+  18.17.0, `cmux` 0.64.17 (cask), `herdr` 0.7.3. All verified to resolve on PATH.
+  fnm has all 5 of your prior nvm Node versions installed (12.18.1, 16.14.2,
+  18.12.1, 20.17.0, 22.15.0), default set to 22.15.0 to match nvm's prior default.
+  Warp untouched, still the active terminal.
+
+  **One deviation worth carrying into Phase 3:** brew's `zinit` formula ships
+  `zinit.zsh` directly at `/usr/local/opt/zinit/zinit.zsh` (caveat: "add `source
+  /usr/local/opt/zinit/zinit.zsh` to your `~/.zshrc`"). Use that instead of the
+  self-bootstrapping git-clone-into-`$ZINIT_HOME` snippet shown in the "Phase 3"
+  section below — it's simpler and stays updated via `brew upgrade` rather than a
+  separate self-update mechanism. `.zshrc` should do:
+  ```zsh
+  source /usr/local/opt/zinit/zinit.zsh
+  ```
+  instead of the `ZINIT_HOME`/git-clone block.
+
+  Also noted: both `atuin` and `herdr` ship an optional background-service caveat
+  (`brew services start atuin` / `brew services start herdr`, or run the daemon
+  manually). Neither service was started during Phase 1 — that's a Phase 2/3
+  config decision, not an install-time one.
+
+- **Phase 2 (config files): not started.**
+- **Phase 3 (rewrite): not started.**
+- **Phase 4 (verify): not started.**
+- **Phase 5 (cutover + cleanup): not started.**
