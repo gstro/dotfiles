@@ -1,0 +1,11 @@
+# Ghostty terminal config, read by cmux for rendering (fonts/theme/keybindings).
+# See docs/plans/terminal-modernization.md for context.
+#
+# ~/.config/ghostty/config -> symlinked from this file at cutover.
+
+font-family = JetBrainsMono Nerd Font
+font-size = 18
+theme = One Dark
+scrollback-limit = 50000000
+copy-on-select = false
+clipboard-trim-trailing-spaces = false

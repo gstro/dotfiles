@@ -336,7 +336,42 @@ cmux+Herdr added).
   manually). Neither service was started during Phase 1 — that's a Phase 2/3
   config decision, not an install-time one.
 
-- **Phase 2 (config files): not started.**
+- **Phase 2 (config files): done**, on branch `phase-2-config-files`, awaiting
+  merge. Created:
+  - `starship.toml` (repo root) — minimal: directory, git branch/status, cmd
+    duration, a plain `>`/`>` character prompt.
+  - `zsh/conf.d/aliases.zsh` — only `gad`/`glg`/`glg2` (not covered by
+    `OMZP::git`).
+  - `zsh/conf.d/functions.zsh` — `mkcd`, `extract`, `gclonecd` ported verbatim
+    from the reference doc, plus `gi()`. **Fixed a bug while porting `gi()`**:
+    the original had `curl -sLw n ...` (a mangled `-w "\n"` flag, printing a
+    literal `n`); rewritten as a plain `curl -sL "...api/$*"`.
+  - `~/.zshrc.local` (outside the repo, `chmod 600`) — consolidates the 3
+    secret exports (`OPENAI_API_KEY`, `LASTFM_API_KEY`, `TMDB_API_KEY`).
+    Originals at `~/.openai_key`/`~/.lastfm_key`/`~/.tmdb_key` untouched until
+    Phase 5.
+  - `ghostty/config` (repo root, → `~/.config/ghostty/config` at cutover) —
+    font, theme, scrollback, clipboard. Chose `JetBrainsMono Nerd Font` (see
+    deviation note below) at size 18 to match Warp's existing `FontSize` of
+    18, theme `One Dark` (used verbatim from cmux's own docs example, so the
+    theme name is confirmed valid).
+  - `cmux/cmux.json` (repo root, → `~/.config/cmux/cmux.json`) — kept close to
+    cmux's own generated template (mostly commented-out), per its
+    "start minimal" guidance. Schema confirmed at
+    `cmux.com/docs/configuration`.
+  - `herdr/config.toml` (repo root, → `~/.config/herdr/config.toml`) — theme
+    `one-dark` (paired with the Ghostty theme), `[ui.toast] delivery =
+    "terminal"` so Herdr's attention notifications route through the same
+    OSC-escape-sequence path cmux already listens on. Config path/schema
+    confirmed at `herdr.dev/docs/configuration/`.
+
+  **One addition beyond the original Phase 2 list:** installed
+  `font-jetbrains-mono-nerd-font` via `brew install --cask`. Neither `eza`'s
+  icon mode nor Ghostty/cmux rendering has nerd-font glyphs without one, and
+  no Nerd Font was present on this machine (`fc-list`/`~/Library/Fonts` both
+  came up empty). Chosen as a widely-used, safe default — swap it in
+  `ghostty/config` if you'd prefer a different one.
+
 - **Phase 3 (rewrite): not started.**
 - **Phase 4 (verify): not started.**
 - **Phase 5 (cutover + cleanup): not started.**

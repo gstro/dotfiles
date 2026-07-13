@@ -1,0 +1,12 @@
+# Herdr agent multiplexer config.
+# ~/.config/herdr/config.toml -> symlinked from this file at cutover.
+# See docs/plans/terminal-modernization.md for context.
+
+[theme]
+name = "one-dark"
+
+[ui.toast]
+# "terminal" asks the outer terminal (cmux/Ghostty) to show the desktop
+# notification, so Herdr's "agent needs you" signal and cmux's own
+# notification system both go through the same escape-sequence path.
+delivery = "terminal"

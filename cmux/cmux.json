@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/manaflow-ai/cmux/main/web/data/cmux.schema.json",
+  "schemaVersion": 1
+
+  // Terminal rendering (fonts, theme, colors, cursor) lives in
+  // ~/.config/ghostty/config, not here. This file is intentionally close to
+  // cmux's own defaults for now — see docs/plans/terminal-modernization.md
+  // Phase 4 for what to revisit after a few days of real use.
+
+  // "notifications": {
+  //   "agentPermissionPrompt": true,
+  //   "agentTurnComplete": "whenIdle"
+  // },
+
+  // "automation": {
+  //   "suppressSubagentNotifications": true
+  // }
+}
