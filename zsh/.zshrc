@@ -44,7 +44,6 @@ zstyle ':omz:plugins:eza' 'git-status' yes
 zstyle ':omz:plugins:eza' 'header' yes
 zstyle ':omz:plugins:eza' 'icons' yes
 
-zinit snippet OMZP::git
 zinit snippet OMZP::bgnotify
 zinit snippet OMZP::brew
 zinit snippet OMZP::direnv

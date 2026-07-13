@@ -495,4 +495,26 @@ cmux+Herdr added).
 
   Live shell (Warp + oh-my-zsh) still completely untouched throughout.
 
+  **Follow-up during this phase:** the user pointed out the original
+  `.zshrc` already had its own 10 custom git aliases (`gst`, `gco`, `gci`,
+  `grb`, `gbr`, `gad`, `gpl`, `gpu`, `glg`, `glg2`) — meaning `OMZP::git`
+  was never actually needed, and the earlier assumption that only
+  `gad`/`glg`/`glg2` weren't "already covered by `OMZP::git`" was never
+  verified for `gci`/`grb`/`gbr`/`gpl`/`gpu` (oh-my-zsh's git plugin
+  commonly uses different short names for these, e.g. `gp`/`gl`/`gb`).
+  **Dropped `OMZP::git` entirely** and moved all 10 original aliases into
+  `conf.d/aliases.zsh` verbatim. This also directly fixes the exact
+  bottleneck Phase 4 profiling found, with no unverifiable-turbo-mode risk:
+  - `.zinit-load-snippet`: 78.82ms self → **24.82ms self**
+  - alias-tracking wrapper (`:zinit-tmp-subst-alias`): 544 calls/42.35ms →
+    **140 calls/10.79ms**
+  - Startup (clean env, login+interactive, x3): **~0.36-0.40s → ~0.29-0.30s**
+  - Extrapolated zsh-internal time now lands around ~116ms — inside the
+    ~120-210ms range the source posts cite, without needing the turbo-load
+    change that couldn't be verified.
+
+  Re-verified after the change: all 10 git aliases present with correct
+  definitions, secrets/eza/starship/bgnotify/custom-functions all still
+  working.
+
 - **Phase 5 (cutover + cleanup): not started.**
