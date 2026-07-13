@@ -372,6 +372,56 @@ cmux+Herdr added).
   came up empty). Chosen as a widely-used, safe default — swap it in
   `ghostty/config` if you'd prefer a different one.
 
-- **Phase 3 (rewrite): not started.**
+- **Phase 3 (rewrite): done**, on branch `phase-3-rewrite`, awaiting merge.
+  Wrote `zsh/.zshenv` (intentionally near-empty), `zsh/.zprofile` (brew
+  shellenv, consolidated PATH array, lazy shims for conda/sdkman/rvm), and
+  `zsh/.zshrc` (history, completion, zinit + OMZ snippets, custom `conf.d/`,
+  starship, fnm/zoxide/fzf, atuin last, `~/.zshrc.local` last).
+
+  **Deviations/fixes made while implementing** (the doc's Phase 3 code block
+  had a few issues that only surface when you actually run it):
+  - Used `source /usr/local/opt/zinit/zinit.zsh` (per the Phase 1 finding)
+    instead of the git-clone bootstrap.
+  - `for f in "$ZDOTDIR"/conf.d/*.zsh; source "$f"` in the original doc is
+    invalid zsh syntax (missing `do`/`done`); fixed to a proper loop with a
+    `(N)` glob qualifier so it doesn't error if `conf.d/` is ever empty.
+  - `eval "$(fzf --zsh)"` (this fzf version supports it) instead of sourcing
+    the two separate `key-bindings.zsh`/`completion.zsh` files — simpler,
+    one command.
+  - `STARSHIP_CONFIG` computed as `"${ZDOTDIR:h}/starship.toml"` since
+    `starship.toml` lives at the repo root, one level up from `$ZDOTDIR`.
+  - Lazy shims for conda/sdkman/rvm fully written out (the doc only sketched
+    the idea) — each is a self-replacing stub function so the real init
+    only runs on first actual use.
+
+  **Verified via isolated `ZDOTDIR=... zsh -i` (through a real pty — a
+  plain `-c` command string produces a spurious `can't change option: zle`
+  warning that isn't a config bug, just a non-tty testing artifact; it
+  vanishes under a real pty):**
+  - `HISTFILE` correctly `/Users/molo/.zsh_history` (existing history
+    preserved).
+  - `gad`/`glg`/`glg2` present from `conf.d/`; `gst`/`gco` etc. present from
+    `OMZP::git`.
+  - `mkcd`/`extract`/`gclonecd`/`gi` all loaded from `conf.d/functions.zsh`.
+  - All 3 secrets present via `~/.zshrc.local`.
+  - `fnm current` → `v22.15.0`, matching nvm's prior default.
+  - `zoxide`'s `z` function loaded; `eza` zstyle plugin working (`ls` →
+    `eza -gh --group-directories-first --git --icons=auto`).
+  - `bgnotify`'s real hooks (`bgnotify_begin`/`bgnotify_end`) registered in
+    `preexec`/`precmd`, alongside `direnv`, autosuggestions,
+    syntax-highlighting, starship, and atuin — all present and in sensible
+    order.
+  - `starship prompt` renders correctly (confirmed directly with
+    `STARSHIP_CONFIG` set; `starship explain` also confirms the config
+    parses).
+  - Informal startup timing (3 runs): **~0.4s**, down from the ~1.2s
+    baseline, but not yet at the ~120-210ms both sources report. Worth
+    profiling properly (`zmodload zsh/zprof`) in Phase 4 rather than
+    guessing here — candidates are `compinit -C` behavior on a stale/first
+    dump, the `direnv`/`eza` git-status hooks, and zinit's own overhead, but
+    this needs actual measurement, not speculation.
+
+  Live shell (Warp + oh-my-zsh) still completely untouched.
+
 - **Phase 4 (verify): not started.**
 - **Phase 5 (cutover + cleanup): not started.**
