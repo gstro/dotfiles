@@ -423,5 +423,76 @@ cmux+Herdr added).
 
   Live shell (Warp + oh-my-zsh) still completely untouched.
 
-- **Phase 4 (verify): not started.**
+- **Phase 4 (verify): done**, on branch `phase-4-verify`, awaiting merge. No
+  config files changed — this phase was pure testing, plus one important
+  correction to how testing itself was done.
+
+  **Important correction to Phase 3's verification:** all of Phase 3's
+  checks used `zsh -ic` (interactive, but *not* login). `.zprofile` is only
+  read for **login** shells, so Phase 3 never actually exercised the PATH
+  array or the conda/sdkman/rvm lazy shims — everything "worked" there
+  because a system-level `path_helper` plus inherited PATH from the test
+  harness's own shell happened to cover the same tools. Re-tested properly
+  with `env -i ... zsh -ilc` (clean environment, real login+interactive
+  shell — this is what Warp/cmux actually launch): PATH array builds
+  correctly from `.zprofile`, and `conda`/`sdk`/`rvm` are genuinely defined
+  as lazy stub functions that self-replace correctly on first real
+  invocation (verified `conda --version`, `sdk version`, `rvm --version`
+  each trigger the real init and produce correct output). No code changes
+  were needed — Phase 3's `.zprofile` was already correct, only the test
+  method was incomplete.
+
+  **Startup profiling:** used `zmodload zsh/zprof` (temporarily added, then
+  reverted) to find the real cost centers. Dominant cost is zinit's own
+  bookkeeping: `.zinit-load-snippet` (~79ms self) plus its alias-tracking
+  wrapper (`:zinit-tmp-subst-alias`, ~42ms self, triggered by **544** alias
+  definitions — almost entirely `OMZP::git`'s 150+ aliases). Attempted the
+  standard fix (zinit `wait'0' lucid` turbo-loading for the plain
+  alias/function snippets), but **could not reliably verify it actually
+  fires** in this sandboxed environment — `wait'0'` depends on zsh's real
+  idle-time `sched` mechanism, which only runs when a shell is genuinely
+  sitting at a prompt waiting for input; no non-interactive simulation
+  available here (heredocs, `-c`, manually firing `precmd_functions`) could
+  reproduce that. Rather than ship an optimization I can't verify, **reverted
+  it** — `.zshrc` is back to the exact Phase 3 version. Startup is
+  confirmed at **~0.36-0.40s** (proper login+interactive, clean env, x3),
+  a real ~3x improvement over the 1.2s baseline, short of the sources'
+  ~120-210ms. Turbo-loading `OMZP::git`/`bgnotify`/`brew`/`direnv`/`eza`
+  remains a documented, low-risk follow-up **you can verify yourself**
+  simply by opening a real terminal tab and checking `gst` works
+  immediately — if it does, the same 5-line change is safe to reapply.
+
+  **Full checklist results:**
+  - `HISTFILE`, custom aliases/functions, secrets, `fnm current` (v22.15.0),
+    `zoxide`, eza's `ls` alias, `bgnotify` hooks, `starship prompt` — all
+    re-confirmed under the corrected login-shell test method.
+  - `direnv`: verified end-to-end — a test `.envrc` exporting a var was
+    correctly auto-loaded on `cd` after `direnv allow`.
+  - `atuin`: imported all 10,828 existing history entries from
+    `.zsh_history` (`atuin import zsh`) and confirmed search returns real,
+    relevant results.
+  - `compaudit`: clean, no insecure completion directories.
+  - `cargo`/`poetry`/`pnpm`/`cs`(coursier)/`scala-cli`: all resolve
+    correctly via the new PATH array.
+  - `fzf-tab`: plugin loads without error; full interactive Tab-completion
+    behavior needs a real keypress to observe, which isn't automatable here
+    — worth a manual check.
+  - **cmux**: launched successfully (`open -a cmux`, confirmed the process
+    running). Config symlinking (`~/.config/ghostty/config`,
+    `~/.config/cmux/cmux.json`) is a Phase 5 cutover step, so it's running
+    on cmux's own defaults for now — expected.
+  - **Herdr**: fully verified via its CLI/socket API directly (server
+    start/stop, `workspace create`, `pane read`/`agent send`, persistent
+    PTY) — created a workspace, sent a command, read back correct output,
+    confirmed the pane was running your *current* live shell (pure prompt
+    visible in the output — correctly not affected by anything in this
+    migration yet). I don't have GUI automation for native macOS apps, so I
+    couldn't literally click inside a cmux pane or observe notification
+    rings visually — Herdr's underlying mechanics don't depend on which
+    terminal wraps it, so this is a faithful functional test, but the
+    visual/GUI parts of the cmux+Herdr combo are worth your own quick look.
+  - `herdr --remote`: not tested — no test SSH host was available.
+
+  Live shell (Warp + oh-my-zsh) still completely untouched throughout.
+
 - **Phase 5 (cutover + cleanup): not started.**
