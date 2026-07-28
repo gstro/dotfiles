@@ -558,8 +558,21 @@ cmux+Herdr added).
   reference that had been sitting untracked). Deleted the six phase
   branches (`phase-0-backup` through `phase-5-cutover-cleanup`) — all were
   merged into `main` and local-only (no matching branches on `origin`), so
-  this was pure cleanup, nothing lost. Everything else in this Status
-  section (cleanup deletions, cmux/Herdr symlink cutover) is still
-  outstanding — see `/Users/molo/.claude/plans/what-steps-remain-for-jiggly-candle.md`
-  for the current step-by-step plan and the manual/verification checks
-  that gate each remaining deletion.
+  this was pure cleanup, nothing lost. See
+  `/Users/molo/.claude/plans/what-steps-remain-for-jiggly-candle.md` for
+  the current step-by-step plan and the manual/verification checks that
+  gate each remaining deletion.
+
+- **Terminal cutover (cmux/Ghostty/Herdr configs): symlinked, confidence
+  window in progress.** `~/.config/ghostty/config` → repo's
+  `ghostty/config`, `~/.config/cmux/cmux.json` → repo's `cmux/cmux.json`
+  (cmux's own auto-generated file — all-commented-out, nothing actually
+  configured in it — backed up first to
+  `~/.config/cmux/cmux.json.pre-repo-symlink.bak`), `~/.config/herdr/config.toml`
+  → repo's `herdr/config.toml` (no live file existed, so no reconciliation
+  needed). cmux was already running when the symlinks landed — reload
+  config (`Cmd+Shift+,`) or restart to pick up the change; this needs a
+  manual/visual check (font, theme, notification behavior) that isn't
+  automatable here. Warp is still the daily driver — per the plan, only
+  make cmux default and remove Warp after a real side-by-side confidence
+  window.

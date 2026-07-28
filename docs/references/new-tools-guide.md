@@ -215,14 +215,21 @@ reversed once the source blogs showed it as core).
 
 ---
 
-## cmux (terminal emulator) — not yet cut over
+## cmux (terminal emulator) — configs symlinked, confidence window in progress
 
-**Replaces:** Warp (planned, not yet executed — you're still on Warp as of this
-writing; confirmed via the earlier mouse-capture question that Warp is swallowing
-Herdr's mouse events, expected to resolve once you switch).
+**Replaces:** Warp (still the daily driver — running cmux side-by-side for a
+confidence window before making it default and removing Warp; earlier mouse-capture
+question found Warp swallowing Herdr's mouse events, expected to resolve once you
+switch).
 **Config:** `cmux/cmux.json` (cmux-specific settings — notifications, automation) +
 `ghostty/config` (rendering: font, theme, scrollback — cmux reads Ghostty's config
-directly since it's built on `libghostty`). Neither is symlinked into `~/.config/` yet.
+directly since it's built on `libghostty`). Both are now symlinked:
+`~/.config/ghostty/config` → `ghostty/config`, `~/.config/cmux/cmux.json` →
+`cmux/cmux.json`. cmux's own auto-generated `cmux.json` (all-commented-out
+template, nothing actually configured in it) was backed up to
+`~/.config/cmux/cmux.json.pre-repo-symlink.bak` before the symlink replaced it.
+cmux was already running when the symlinks were created — reload config
+(`Cmd+Shift+,`) or restart the app to pick up the change.
 
 Current `ghostty/config`:
 ```
@@ -248,12 +255,13 @@ copy-on-select = false
 
 ---
 
-## Herdr (agent-aware multiplexer) — not yet cut over
+## Herdr (agent-aware multiplexer) — config symlinked
 
 **New** (replaces nothing directly — new capability; doesn't require cmux, works in
 Warp today, just with the mouse limitation noted above).
-**Config:** `herdr/config.toml`, not yet symlinked to `~/.config/herdr/config.toml`
-(currently running on Herdr's built-in defaults — no config.toml exists live yet).
+**Config:** `herdr/config.toml`, now symlinked to `~/.config/herdr/config.toml`
+(no live config existed before this, so no reconciliation was needed — Herdr just
+picks it up).
 
 Current repo config:
 ```toml
