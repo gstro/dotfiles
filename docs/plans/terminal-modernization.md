@@ -550,8 +550,9 @@ cmux+Herdr added).
   - Reconciling `.profile`/`.bash_profile`/`.bashrc` (dedupe PATH lines).
   - Removing `backup/20260713-154441/` once fully confident (it holds
     secrets).
-  - Removing Warp, once cmux+Herdr have been used side-by-side long enough
-    to trust them (independent timing from the shell cleanup above).
+  - ~~Removing Warp, once cmux+Herdr have been used side-by-side long
+    enough to trust them (independent timing from the shell cleanup
+    above).~~ **Done** — see "Terminal cutover" below.
 
 - **Repo hygiene (post-Phase-5): done.** Committed
   `docs/references/new-tools-guide.md` (a companion per-tool config
@@ -563,16 +564,23 @@ cmux+Herdr added).
   the current step-by-step plan and the manual/verification checks that
   gate each remaining deletion.
 
-- **Terminal cutover (cmux/Ghostty/Herdr configs): symlinked, confidence
-  window in progress.** `~/.config/ghostty/config` → repo's
+- **Terminal cutover: done.** `~/.config/ghostty/config` → repo's
   `ghostty/config`, `~/.config/cmux/cmux.json` → repo's `cmux/cmux.json`
   (cmux's own auto-generated file — all-commented-out, nothing actually
   configured in it — backed up first to
   `~/.config/cmux/cmux.json.pre-repo-symlink.bak`), `~/.config/herdr/config.toml`
   → repo's `herdr/config.toml` (no live file existed, so no reconciliation
-  needed). cmux was already running when the symlinks landed — reload
-  config (`Cmd+Shift+,`) or restart to pick up the change; this needs a
-  manual/visual check (font, theme, notification behavior) that isn't
-  automatable here. Warp is still the daily driver — per the plan, only
-  make cmux default and remove Warp after a real side-by-side confidence
-  window.
+  needed). User visually confirmed a real cmux tab: starship prompt with
+  git branch, eza-style `ls -al` (icons, inline git status), correct
+  Ghostty font/theme — full config parity with the old Warp+oh-my-zsh
+  setup, just faster. **Warp removed**: not a brew cask (was a manual
+  install, `dev.warp.Warp-Stable`), so no `brew uninstall`; moved
+  `/Applications/Warp.app` to `~/.Trash` instead (recoverable there until
+  Trash is emptied). Warp was still running with active panes when this
+  happened — an automated quit was blocked by one of Warp's own
+  confirmation dialogs, so the app bundle was moved while still running
+  (safe on macOS; the live process keeps working off the old inode, it
+  just won't relaunch from Spotlight/Dock afterward). Any open Warp
+  windows need a manual quit whenever convenient. Making cmux the
+  *formal* default terminal (if such a setting exists) is a GUI toggle in
+  cmux's own Settings (`Cmd+,`) — not automatable here, left to the user.

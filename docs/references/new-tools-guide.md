@@ -215,12 +215,13 @@ reversed once the source blogs showed it as core).
 
 ---
 
-## cmux (terminal emulator) — configs symlinked, confidence window in progress
+## cmux (terminal emulator) — cutover complete
 
-**Replaces:** Warp (still the daily driver — running cmux side-by-side for a
-confidence window before making it default and removing Warp; earlier mouse-capture
-question found Warp swallowing Herdr's mouse events, expected to resolve once you
-switch).
+**Replaces:** Warp. Warp has been removed (`/Applications/Warp.app` moved to
+`~/.Trash` — it wasn't a brew cask, so no `brew uninstall`; empty Trash once fully
+confident). cmux is now the daily driver. If cmux exposes a "set as default
+terminal" toggle, that's a one-time manual step in its own Settings (`Cmd+,`) —
+not part of this repo's config.
 **Config:** `cmux/cmux.json` (cmux-specific settings — notifications, automation) +
 `ghostty/config` (rendering: font, theme, scrollback — cmux reads Ghostty's config
 directly since it's built on `libghostty`). Both are now symlinked:
