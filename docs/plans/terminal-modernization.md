@@ -552,3 +552,14 @@ cmux+Herdr added).
     secrets).
   - Removing Warp, once cmux+Herdr have been used side-by-side long enough
     to trust them (independent timing from the shell cleanup above).
+
+- **Repo hygiene (post-Phase-5): done.** Committed
+  `docs/references/new-tools-guide.md` (a companion per-tool config
+  reference that had been sitting untracked). Deleted the six phase
+  branches (`phase-0-backup` through `phase-5-cutover-cleanup`) — all were
+  merged into `main` and local-only (no matching branches on `origin`), so
+  this was pure cleanup, nothing lost. Everything else in this Status
+  section (cleanup deletions, cmux/Herdr symlink cutover) is still
+  outstanding — see `/Users/molo/.claude/plans/what-steps-remain-for-jiggly-candle.md`
+  for the current step-by-step plan and the manual/verification checks
+  that gate each remaining deletion.
