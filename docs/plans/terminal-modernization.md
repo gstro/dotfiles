@@ -534,25 +534,53 @@ cmux+Herdr added).
   `~/.zshenv` from `backup/20260713-154441/.zshenv` (still exactly the
   original one-liner).
 
-  **Cleanup: deliberately not started yet.** The plan's own "confidence
-  window" step calls for actually using the new shell for real before
-  deleting anything, and cleanup includes materially harder-to-reverse
-  actions than the cutover itself (removing `~/.oh-my-zsh`, the original
-  secret key files, `nvm`, and later `Warp` once cmux+Herdr are trusted) —
-  unlike the cutover, restoring one file doesn't undo those. Waiting for
-  explicit confirmation before proceeding with:
-  - Removing now-inert `~/.zshrc`, `~/.zprofile`, `~/.zlogin` (already
-    backed up).
-  - `rm -rf ~/.oh-my-zsh` (46 MB) and optionally `npm rm -g pure-prompt`.
-  - Removing the 3 original key files (`~/.openai_key`, `~/.lastfm_key`,
-    `~/.tmdb_key` — now consolidated in `~/.zshrc.local`).
-  - Removing `nvm` (after confirming `fnm` parity holds up in real use).
-  - Reconciling `.profile`/`.bash_profile`/`.bashrc` (dedupe PATH lines).
-  - Removing `backup/20260713-154441/` once fully confident (it holds
-    secrets).
+  **Cleanup: done**, except the two items explicitly held back below. Ran
+  with explicit user confirmation once the confidence-window checks
+  passed (fresh-tab aliases/Ctrl-R/fzf-tab, `fnm` parity across real
+  `.nvmrc` projects, secrets resolving from `~/.zshrc.local`). Every file
+  removed was first diffed byte-for-byte against
+  `backup/20260713-154441/` to confirm nothing had drifted since Phase 0.
+  - Removed now-inert `~/.zshrc`, `~/.zprofile`, `~/.zlogin`.
+  - `rm -rf ~/.oh-my-zsh` (46 MB reclaimed). Skipped
+    `npm rm -g pure-prompt` — checked the fnm-managed global npm and it
+    holds only `corepack`/`npm`; pure-prompt lived under the old nvm tree
+    and went away with it.
+  - `rm -rf ~/.nvm` (**785 MB reclaimed** — the single biggest cleanup in
+    the whole migration). Not a brew formula, so no `brew uninstall`
+    needed. Checked `.bash_profile`/`.profile`/`.bashrc` for leftover nvm
+    lines first — none existed, nothing to strip.
+  - Removed the 3 original key files (`~/.openai_key`, `~/.lastfm_key`,
+    `~/.tmdb_key`), after confirming all three resolve correctly from
+    `~/.zshrc.local`.
+  - Re-verified end-to-end with a genuinely clean `env -i ... zsh -ilc`
+    login+interactive shell (not `zsh -ic`, which skips `.zprofile`):
+    `ZDOTDIR`, `HISTFILE`, `fnm current`, all custom aliases/functions,
+    secrets, and the conda/sdkman/rvm lazy shims all resolve correctly.
+    Startup re-timed at **~0.31-0.32s** (x3), no regression from the
+    pre-cleanup ~0.29-0.30s.
+  - **Intentionally held back:** reconciling `.profile`/`.bash_profile`/
+    `.bashrc` PATH duplication, and removing `backup/20260713-154441/`.
+    See notes below.
   - ~~Removing Warp, once cmux+Herdr have been used side-by-side long
     enough to trust them (independent timing from the shell cleanup
     above).~~ **Done** — see "Terminal cutover" below.
+
+  **Why the PATH-dedup item was skipped rather than guessed at:** the
+  literal duplication (e.g. the coursier PATH block appearing in both
+  `.bash_profile` and `.profile`) isn't actually a runtime double-source
+  bug — bash only reads one of `.bash_profile`/`.profile` for a login
+  shell (never both), and `.bashrc` is separate again for non-login
+  interactive shells. So no real session executes both copies. Given
+  that, and no visibility into whether these files are ever actually
+  exercised (e.g. by a script explicitly invoking `sh`/`bash`), trimming
+  them risked breaking a codepath silently rather than fixing a real bug.
+  Left as-is; worth reconciling directly if/when it's clear which of
+  these non-zsh shells still see real use.
+
+  **`backup/20260713-154441/` removal is deliberately last-and-separate**
+  — it holds the three plaintext API keys and the full pre-migration
+  `.zsh_history`, and it's also the shell's own rollback path
+  (`cp backup/.../.zshenv ~/.zshenv`). Not removed as part of this pass.
 
 - **Repo hygiene (post-Phase-5): done.** Committed
   `docs/references/new-tools-guide.md` (a companion per-tool config
