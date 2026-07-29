@@ -29,8 +29,13 @@ fpath=("$HOME/Library/Application Support/ScalaCli/completions/zsh" $fpath)
 
 # --- Zinit + cherry-picked oh-my-zsh snippets ---
 # Uses the brew-installed zinit.zsh directly (see Phase 1 status in the plan
-# doc) rather than self-bootstrapping via a git clone.
-source /usr/local/opt/zinit/zinit.zsh
+# doc) rather than self-bootstrapping via a git clone. Apple Silicon
+# (/opt/homebrew) vs Intel (/usr/local) — checked in that order.
+if [[ -f /opt/homebrew/opt/zinit/zinit.zsh ]]; then
+  source /opt/homebrew/opt/zinit/zinit.zsh
+elif [[ -f /usr/local/opt/zinit/zinit.zsh ]]; then
+  source /usr/local/opt/zinit/zinit.zsh
+fi
 
 zinit snippet OMZL::git.zsh
 zinit snippet OMZL::directories.zsh
