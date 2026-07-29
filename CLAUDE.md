@@ -35,6 +35,11 @@ resolved.
   migration introduced: what it replaced, current config, and recommended settings.
   Check this before changing any tool's config (starship, zinit, fnm, zoxide, fzf,
   eza, atuin, cmux, Herdr) — it explains *why* the current settings were chosen.
+- `docs/references/new-machine-setup.md` — step-by-step bootstrap instructions for
+  putting this stack on a machine that doesn't have any of it yet (as opposed to
+  `terminal-modernization.md`, which documents *migrating* an existing customized
+  setup). If a change here affects setup on a fresh machine — a new hardcoded path,
+  a new required `brew install`, a new symlink — update this doc too.
 
 ## Architecture
 

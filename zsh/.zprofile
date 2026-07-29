@@ -1,7 +1,12 @@
 # Login-shell setup: PATH, brew, and lazy shims for heavy version managers.
 # Aliases/functions/prompt/completions belong in .zshrc, not here.
 
-[[ -x /usr/local/bin/brew ]] && eval "$(/usr/local/bin/brew shellenv)"
+# Apple Silicon (/opt/homebrew) vs Intel (/usr/local) — checked in that order.
+if [[ -x /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -x /usr/local/bin/brew ]]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+fi
 
 typeset -U path PATH
 path=(

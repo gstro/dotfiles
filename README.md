@@ -18,6 +18,13 @@ follow [`docs/references/zshrc-best-practices.md`](docs/references/zshrc-best-pr
 A short list of intentionally-deferred cleanup remains (documented in the plan doc's
 Status section) — none of it blocks day-to-day use.
 
+## Setting up a new machine
+
+See [`docs/references/new-machine-setup.md`](docs/references/new-machine-setup.md)
+for step-by-step instructions to bootstrap this stack on a machine that doesn't have
+any of it yet (fresh Mac, reformat, etc.) — a shorter, more direct path than the
+migration plan doc, which is written for migrating an *existing* customized setup.
+
 ## Layout
 
 ```
