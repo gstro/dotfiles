@@ -1,5 +1,10 @@
 # Terminal Modernization — Design Doc
 
+> **Status: migration complete and cut over.** oh-my-zsh, `pure`, `nvm`, and Warp
+> have all been removed; zinit/starship/fnm/atuin/cmux+Herdr are live. A short list
+> of intentionally-deferred, non-blocking cleanup remains — see the
+> [Status](#status) section at the bottom for the full history and what's left.
+
 ## Context
 
 Goal: modernize an aging, slow zsh setup (~1.2s startup, full oh-my-zsh, `pure` prompt)

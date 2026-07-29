@@ -4,12 +4,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-Greg's personal dotfiles repo (currently zsh/terminal-focused only). As of now the
-repo contains **no shell configs yet** — it's in the planning stage of a migration
-away from an oh-my-zsh + `pure` prompt setup living in `$HOME`. There is no
-build/lint/test tooling because there is no code here yet, only shell configuration
-(present and future) and two docs that govern how that configuration should be
-written and rolled out.
+Greg's personal dotfiles repo (zsh/terminal-focused). It holds the **live** zsh
+config (`zsh/.zshenv`, `.zprofile`, `.zshrc`, `conf.d/*.zsh`) plus the terminal
+stack that replaced Warp + oh-my-zsh + `pure`: `starship.toml`, `ghostty/config`,
+`cmux/cmux.json`, `herdr/config.toml`. `~/.zshenv` on this machine is a one-line
+bootstrap (`export ZDOTDIR="$HOME/local/dotfiles/zsh"`), so every real shell runs
+the config checked in here — this is not a staging/planning repo, changes here take
+effect the next time a shell starts. There is no build/lint/test tooling; validation
+means running an isolated shell against the config (see below).
+
+The migration that built all this is **done and cut over** (oh-my-zsh, `pure`,
+`nvm`, and Warp have all been removed from the machine). The plan doc below is kept
+as the historical record and tracks a short list of intentionally-deferred cleanup
+— check its Status section before assuming something listed as "held back" has been
+resolved.
 
 ## Read these first
 
@@ -19,31 +27,33 @@ written and rolled out.
   `command -v`, and the target of keeping interactive shell startup under
   ~100-200ms. Treat this as the authoritative style reference for any zsh file added
   here — don't reinvent these conventions ad hoc.
-- `docs/plans/terminal-modernization.md` — the live, phased plan for the actual
-  migration (oh-my-zsh/pure/nvm/Warp → zinit/starship/fnm/atuin/cmux+herdr). This is
-  the source of truth for what's been decided, what's still open, and which phase
-  has (not) been executed. **Check its "Status" section before doing any shell-config
-  work** — it tracks what's real vs. still just planned.
+- `docs/plans/terminal-modernization.md` — the phased migration record
+  (oh-my-zsh/pure/nvm/Warp → zinit/starship/fnm/atuin/cmux+herdr) and its Status
+  section, the source of truth for what's actually live on the machine vs. what's
+  still an open follow-up.
+- `docs/references/new-tools-guide.md` — per-tool reference for everything the
+  migration introduced: what it replaced, current config, and recommended settings.
+  Check this before changing any tool's config (starship, zinit, fnm, zoxide, fzf,
+  eza, atuin, cmux, Herdr) — it explains *why* the current settings were chosen.
 
-## Planned architecture (not yet built)
+## Architecture
 
-The migration plan uses a `ZDOTDIR`-based safety-net pattern: new config is authored
-under `zsh/` in this repo (`.zshenv`, `.zprofile`, `.zshrc`, `conf.d/*.zsh`,
-`starship.toml`) without ever touching the live `~/.zshrc`/`~/.zshenv` until an
-explicit, one-line cutover (`export ZDOTDIR=.../zsh` in `~/.zshenv`). This means:
+A `ZDOTDIR`-based safety-net pattern: all zsh config lives under `zsh/` in this repo
+(`.zshenv`, `.zprofile`, `.zshrc`, `conf.d/*.zsh`), and `~/.zshenv` is the only file
+outside the repo that matters — it just sets `ZDOTDIR`. This means:
 
-- Any new zsh config work should go under a `zsh/` subdirectory here, not assume it
-  lands directly in `$HOME`.
+- Any new zsh config work goes under `zsh/` here, not `$HOME` directly.
 - Secrets are kept **outside** the repo entirely, in `~/.zshrc.local` (gitignored,
   sourced last from `.zshrc`) — never commit API keys or tokens into `zsh/`.
-- The repo is also expected to eventually hold `ghostty/config` and `cmux/cmux.json`
-  (for the cmux terminal app) once that track of the plan is executed — these mirror
-  `~/.config/ghostty/config` and `~/.config/cmux/cmux.json`.
+- `ghostty/config` and `cmux/cmux.json` are symlinked live to
+  `~/.config/ghostty/config` and `~/.config/cmux/cmux.json`; `herdr/config.toml` to
+  `~/.config/herdr/config.toml`. Same rule applies: edit the repo copy, not the
+  `~/.config` one — the symlink is what makes the repo copy authoritative.
 
 ## Verifying shell config changes
 
-Since there's no test suite, the way to validate zsh config changes once `zsh/`
-exists is to run an isolated shell against it without affecting the current session:
+There's no test suite — validate zsh config changes by running an isolated shell
+against this repo's config without affecting the current session:
 
 ```zsh
 ZDOTDIR="$HOME/local/dotfiles/zsh" zsh -il
@@ -55,13 +65,17 @@ Startup performance is checked with:
 ZDOTDIR="$HOME/local/dotfiles/zsh" /usr/bin/time zsh -i -c exit
 ```
 
-Both are used repeatedly throughout `docs/plans/terminal-modernization.md`'s Phase 4
-verification steps — reuse the same pattern rather than testing against the live
-`~/.zshrc`.
+Note `-ic`/non-login testing silently skips `.zprofile` (Phase 3 of the migration
+made exactly this mistake and caught it in Phase 4) — for anything that touches
+`.zprofile` (PATH array, conda/sdkman/rvm lazy shims), test a real login+interactive
+shell instead:
+
+```zsh
+env -i HOME="$HOME" TERM="$TERM" ZDOTDIR="$HOME/local/dotfiles/zsh" zsh -ilc '<command>'
+```
 
 ## .gitignore
 
-Currently the toptal-generated macOS + VS Code template. It has a known stray
-trailing `n` on the last line (Phase 0 of the migration plan calls out fixing it)
-and still needs `backup/`, `.zshrc.local`, and `*.local` added before any backups or
-local secrets files are created in/near this repo.
+toptal-generated macOS + VS Code template, since fixed (the stray trailing `n` from
+Phase 0 is gone) and extended with `backup/`, `.zshrc.local`, `*.local`, and
+`zsh/.zcompdump*` (compinit's runtime cache) — no outstanding gaps.
