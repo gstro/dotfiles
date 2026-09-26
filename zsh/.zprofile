@@ -64,3 +64,7 @@ if [[ -s "$HOME/.rvm/scripts/rvm" ]]; then
     rvm "$@"
   }
 fi
+
+# >>> JVM installed by coursier >>>
+export JAVA_HOME="/Users/gstro/Library/Caches/Coursier/arc/https/github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.12%252B8/OpenJDK21U-jdk_aarch64_mac_hotspot_21.0.12_8.tar.gz/jdk-21.0.12+8/Contents/Home"
+# <<< JVM installed by coursier <<<

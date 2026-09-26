@@ -1,3 +1,4 @@
+onboarding = false
 # Herdr agent multiplexer config.
 # ~/.config/herdr/config.toml -> symlinked from this file at cutover.
 # See docs/plans/terminal-modernization.md for context.
@@ -10,3 +11,14 @@ name = "one-dark"
 # notification, so Herdr's "agent needs you" signal and cmux's own
 # notification system both go through the same escape-sequence path.
 delivery = "terminal"
+
+[keys]
+new_workspace      = "shift+alt+n"
+next_workspace     = "shift+alt+down"
+previous_workspace = "shift+alt+up"
+new_tab            = "shift+alt+t"
+next_tab           = "shift+alt+right"
+previous_tab       = "shift+alt+left"
+
+[ui]
+agent_panel_sort = "priority"
